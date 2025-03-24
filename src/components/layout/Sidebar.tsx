@@ -15,8 +15,15 @@ import {
   Wallet,
   Users,
   ShieldCheck,
-  Target
+  Target,
+  Globe
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -31,6 +38,14 @@ const Sidebar: React.FC<SidebarProps> = ({
   isDarkMode, 
   toggleDarkMode 
 }) => {
+  const [language, setLanguage] = useState<'es' | 'en'>('es');
+
+  const handleLanguageChange = (newLang: 'es' | 'en') => {
+    setLanguage(newLang);
+    // In a real application, this would trigger a context change or similar
+    console.log(`Language changed to: ${newLang}`);
+  };
+
   return (
     <div 
       className={`fixed left-0 top-0 h-screen z-40 transition-all duration-300 ease-in-out bg-sidebar ${
@@ -118,24 +133,80 @@ const Sidebar: React.FC<SidebarProps> = ({
           
           <div className="space-y-3">
             {!collapsed && (
-              <div className="flex items-center justify-between">
-                <span className="text-sidebar-foreground/80 text-sm">Dark Mode</span>
-                <Switch
-                  checked={isDarkMode}
-                  onCheckedChange={toggleDarkMode}
-                  className="data-[state=checked]:bg-sidebar-primary"
-                />
-              </div>
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-sidebar-foreground/80 text-sm">Dark Mode</span>
+                  <Switch
+                    checked={isDarkMode}
+                    onCheckedChange={toggleDarkMode}
+                    className="data-[state=checked]:bg-sidebar-primary"
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-sidebar-foreground/80 text-sm">Language</span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="gap-1">
+                        <Globe size={16} />
+                        <span>{language === 'es' ? 'Español' : 'English'}</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem 
+                        onClick={() => handleLanguageChange('es')}
+                        className={language === 'es' ? "bg-accent" : ""}
+                      >
+                        Español
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => handleLanguageChange('en')}
+                        className={language === 'en' ? "bg-accent" : ""}
+                      >
+                        English
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </>
             )}
             {collapsed && (
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={toggleDarkMode}
-                className="text-sidebar-foreground w-full"
-              >
-                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-              </Button>
+              <>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={toggleDarkMode}
+                  className="text-sidebar-foreground w-full"
+                >
+                  {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+                </Button>
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="text-sidebar-foreground w-full"
+                    >
+                      <Globe size={20} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem 
+                      onClick={() => handleLanguageChange('es')}
+                      className={language === 'es' ? "bg-accent" : ""}
+                    >
+                      Español
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => handleLanguageChange('en')}
+                      className={language === 'en' ? "bg-accent" : ""}
+                    >
+                      English
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
             )}
             
             <NavLink 

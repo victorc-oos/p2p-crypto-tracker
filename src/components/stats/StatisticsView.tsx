@@ -187,7 +187,7 @@ const StatisticsView: React.FC = () => {
                   stroke="hsl(var(--primary))" 
                   name="Profit"
                   strokeWidth={2}
-                  activeDot={{ r: the8 }} 
+                  activeDot={{ r: 8 }} 
                 />
                 <Line 
                   yAxisId="right"

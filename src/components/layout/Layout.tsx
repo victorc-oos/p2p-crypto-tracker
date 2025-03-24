@@ -1,13 +1,15 @@
 
 import React, { useState, useEffect } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Settings from "@/pages/Settings";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Layout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
   
   // Check if user preference is for dark mode
   useEffect(() => {
@@ -39,6 +41,11 @@ const Layout: React.FC = () => {
 
   // Check if current route is settings
   const isSettingsPage = location.pathname === '/settings';
+  
+  // If no user is logged in, redirect to login
+  if (!user) {
+    return <Navigate to="/auth" />;
+  }
   
   return (
     <div className="min-h-screen flex w-full">

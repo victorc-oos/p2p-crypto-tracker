@@ -48,7 +48,7 @@ const App = () => (
                   <Route path="/goals" element={<GoalsList />} />
                   <Route path="/goals/new" element={<GoalForm />} />
                   <Route path="/goals/:id/edit" element={<GoalForm />} />
-                  <Route path="/settings" element={<Settings />} />
+                  {/* Remove the settings route here as it's now handled inside Layout.tsx */}
                 </Route>
               </Route>
               

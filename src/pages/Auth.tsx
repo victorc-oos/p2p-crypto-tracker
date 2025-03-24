@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, LogIn, User } from 'lucide-react';
 
+// Update the schemas with proper validation messages in Spanish
 const loginSchema = z.object({
   email: z.string().email({ message: 'Por favor ingresa un correo electrónico válido' }),
   password: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }),
@@ -31,6 +32,7 @@ const Auth: React.FC = () => {
   const { user, loading, signIn, signUp } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -50,11 +52,26 @@ const Auth: React.FC = () => {
   });
 
   const onLoginSubmit = async (values: LoginFormValues) => {
-    await signIn(values.email, values.password);
+    setFormError(null);
+    try {
+      await signIn(values.email, values.password);
+    } catch (error: any) {
+      setFormError(error.message);
+    }
   };
 
   const onRegisterSubmit = async (values: RegisterFormValues) => {
-    await signUp(values.email, values.password);
+    setFormError(null);
+    if (values.password !== values.confirmPassword) {
+      setFormError("Las contraseñas no coinciden");
+      return;
+    }
+    
+    try {
+      await signUp(values.email, values.password);
+    } catch (error: any) {
+      setFormError(error.message);
+    }
   };
 
   // If user is already logged in, redirect to dashboard
@@ -75,6 +92,12 @@ const Auth: React.FC = () => {
               : 'Regístrate para comenzar a usar CriptoTracker'}
           </p>
         </div>
+
+        {formError && (
+          <div className="p-3 text-sm bg-destructive/10 border border-destructive/20 text-destructive rounded-md">
+            {formError}
+          </div>
+        )}
 
         {isLogin ? (
           // Login Form
@@ -203,11 +226,25 @@ const Auth: React.FC = () => {
                   <FormItem>
                     <FormLabel>Confirmar contraseña</FormLabel>
                     <FormControl>
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="******"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="******"
+                          className="pr-10"
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-2.5 text-muted-foreground"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

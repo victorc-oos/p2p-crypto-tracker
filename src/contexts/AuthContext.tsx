@@ -52,12 +52,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       
       if (error) {
+        console.error('Sign in error:', error.message);
         setError(error.message);
         toast({
           title: "Error al iniciar sesión",
           description: error.message,
           variant: "destructive",
         });
+        throw error;
       } else {
         toast({
           title: "Inicio de sesión exitoso",
@@ -67,6 +69,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     } catch (error: any) {
       setError(error.message);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -79,12 +82,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { error } = await supabase.auth.signUp({ email, password });
       
       if (error) {
+        console.error('Sign up error:', error.message);
         setError(error.message);
         toast({
           title: "Error al registrarse",
           description: error.message,
           variant: "destructive",
         });
+        throw error;
       } else {
         toast({
           title: "Registro exitoso",
@@ -93,6 +98,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     } catch (error: any) {
       setError(error.message);
+      throw error;
     } finally {
       setLoading(false);
     }

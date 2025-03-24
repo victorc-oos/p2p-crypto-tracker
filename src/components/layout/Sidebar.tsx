@@ -1,9 +1,10 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { 
   BarChart, 
   Home, 
@@ -18,12 +19,6 @@ import {
   Target,
   Globe
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -38,13 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   isDarkMode, 
   toggleDarkMode 
 }) => {
-  const [language, setLanguage] = useState<'es' | 'en'>('es');
-
-  const handleLanguageChange = (newLang: 'es' | 'en') => {
-    setLanguage(newLang);
-    // In a real application, this would trigger a context change or similar
-    console.log(`Language changed to: ${newLang}`);
-  };
+  const { t } = useLanguage();
 
   return (
     <div 
@@ -78,7 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 }
               >
                 <Home size={20} />
-                {!collapsed && <span>Dashboard</span>}
+                {!collapsed && <span>{t('dashboard')}</span>}
               </NavLink>
             </li>
             <li>
@@ -89,7 +78,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 }
               >
                 <Wallet size={20} />
-                {!collapsed && <span>Payment Methods</span>}
+                {!collapsed && <span>{t('payment_methods')}</span>}
               </NavLink>
             </li>
             <li>
@@ -100,7 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 }
               >
                 <Users size={20} />
-                {!collapsed && <span>Transactions</span>}
+                {!collapsed && <span>{t('transactions')}</span>}
               </NavLink>
             </li>
             <li>
@@ -111,7 +100,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 }
               >
                 <BarChart size={20} />
-                {!collapsed && <span>Statistics</span>}
+                {!collapsed && <span>{t('statistics')}</span>}
               </NavLink>
             </li>
             <li>
@@ -122,7 +111,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 }
               >
                 <Target size={20} />
-                {!collapsed && <span>Goals</span>}
+                {!collapsed && <span>{t('goals')}</span>}
               </NavLink>
             </li>
           </ul>
@@ -133,80 +122,24 @@ const Sidebar: React.FC<SidebarProps> = ({
           
           <div className="space-y-3">
             {!collapsed && (
-              <>
-                <div className="flex items-center justify-between">
-                  <span className="text-sidebar-foreground/80 text-sm">Dark Mode</span>
-                  <Switch
-                    checked={isDarkMode}
-                    onCheckedChange={toggleDarkMode}
-                    className="data-[state=checked]:bg-sidebar-primary"
-                  />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-sidebar-foreground/80 text-sm">Language</span>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="gap-1">
-                        <Globe size={16} />
-                        <span>{language === 'es' ? 'Español' : 'English'}</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem 
-                        onClick={() => handleLanguageChange('es')}
-                        className={language === 'es' ? "bg-accent" : ""}
-                      >
-                        Español
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => handleLanguageChange('en')}
-                        className={language === 'en' ? "bg-accent" : ""}
-                      >
-                        English
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </>
+              <div className="flex items-center justify-between">
+                <span className="text-sidebar-foreground/80 text-sm">{t('dark_mode')}</span>
+                <Switch
+                  checked={isDarkMode}
+                  onCheckedChange={toggleDarkMode}
+                  className="data-[state=checked]:bg-sidebar-primary"
+                />
+              </div>
             )}
             {collapsed && (
-              <>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={toggleDarkMode}
-                  className="text-sidebar-foreground w-full"
-                >
-                  {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-                </Button>
-                
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="text-sidebar-foreground w-full"
-                    >
-                      <Globe size={20} />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem 
-                      onClick={() => handleLanguageChange('es')}
-                      className={language === 'es' ? "bg-accent" : ""}
-                    >
-                      Español
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => handleLanguageChange('en')}
-                      className={language === 'en' ? "bg-accent" : ""}
-                    >
-                      English
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={toggleDarkMode}
+                className="text-sidebar-foreground w-full"
+              >
+                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+              </Button>
             )}
             
             <NavLink 
@@ -216,7 +149,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               }
             >
               <Settings size={20} />
-              {!collapsed && <span>Settings</span>}
+              {!collapsed && <span>{t('settings')}</span>}
             </NavLink>
             
             <Button 
@@ -224,7 +157,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               className={`sidebar-link w-full justify-start`}
             >
               <LogOut size={20} />
-              {!collapsed && <span>Logout</span>}
+              {!collapsed && <span>{t('logout')}</span>}
             </Button>
           </div>
         </div>

@@ -1,11 +1,13 @@
 
 import React, { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
+import Settings from "@/pages/Settings";
 
 const Layout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const location = useLocation();
   
   // Check if user preference is for dark mode
   useEffect(() => {
@@ -34,6 +36,9 @@ const Layout: React.FC = () => {
       document.documentElement.classList.remove('dark');
     }
   }, [isDarkMode]);
+
+  // Check if current route is settings
+  const isSettingsPage = location.pathname === '/settings';
   
   return (
     <div className="min-h-screen flex w-full">
@@ -50,7 +55,11 @@ const Layout: React.FC = () => {
         }`}
       >
         <div className="container mx-auto py-8 px-4 page-transition">
-          <Outlet />
+          {isSettingsPage ? (
+            <Settings isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+          ) : (
+            <Outlet />
+          )}
         </div>
       </main>
     </div>

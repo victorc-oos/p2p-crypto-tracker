@@ -1,3 +1,4 @@
+
 import { PaymentMethod, Transaction, Goal, Stat, PaymentMethodStat } from './types';
 
 // Métodos de pago de ejemplo

@@ -25,23 +25,23 @@ const Dashboard: React.FC = () => {
   const recentStats = stats.slice(0, timeFrame === 'day' ? 7 : timeFrame === 'week' ? 4 : 30).reverse();
   
   // Format date for chart
-  const formatDate = (date: Date) => {
+  const formatDate = (dateStr: string) => {
     return new Intl.DateTimeFormat('en-US', { 
       month: 'short', 
       day: 'numeric' 
-    }).format(new Date(date));
+    }).format(new Date(dateStr));
   };
   
   // Process chart data
   const profitChartData = recentStats.map(stat => ({
     date: formatDate(stat.date),
-    profit: stat.totalProfit.toFixed(2),
+    profit: stat.total_profit.toFixed(2),
   }));
   
   // Get most profitable payment methods
   const methodPerformance = paymentMethods.map(method => {
     const methodTransactions = transactions.filter(t => 
-      t.sourceMethodId === method.id || t.destinationMethodId === method.id
+      t.source_method_id === method.id || t.destination_method_id === method.id
     );
     
     const totalProfit = methodTransactions.reduce((sum, t) => sum + t.profit, 0);
@@ -120,10 +120,10 @@ const Dashboard: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${recentStats.reduce((sum, stat) => sum + stat.totalProfit, 0).toFixed(2)}
+              ${recentStats.reduce((sum, stat) => sum + stat.total_profit, 0).toFixed(2)}
             </div>
             <p className="text-xs text-muted-foreground">
-              From {recentStats.reduce((sum, stat) => sum + stat.transactionCount, 0)} transactions
+              From {recentStats.reduce((sum, stat) => sum + stat.transaction_count, 0)} transactions
             </p>
           </CardContent>
         </Card>
@@ -215,8 +215,8 @@ const Dashboard: React.FC = () => {
           <CardContent>
             <div className="space-y-4">
               {recentTransactions.map(transaction => {
-                const sourceMethod = paymentMethods.find(pm => pm.id === transaction.sourceMethodId);
-                const destMethod = paymentMethods.find(pm => pm.id === transaction.destinationMethodId);
+                const sourceMethod = paymentMethods.find(pm => pm.id === transaction.source_method_id);
+                const destMethod = paymentMethods.find(pm => pm.id === transaction.destination_method_id);
                 
                 return (
                   <div key={transaction.id} className="flex items-center space-x-4">

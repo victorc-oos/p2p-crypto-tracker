@@ -22,11 +22,12 @@ import {
   History,
   Home,
   Moon,
-  Settings,
+  Settings as SettingsIcon,
   Sun,
   Target,
   LogOut
 } from "lucide-react";
+import Settings from "@/pages/Settings";
 
 const Layout: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -129,7 +130,7 @@ const Layout: React.FC = () => {
                     tooltip="Ajustes"
                   >
                     <Link to="/settings">
-                      <Settings className="h-5 w-5" />
+                      <SettingsIcon className="h-5 w-5" />
                       <span>Ajustes</span>
                     </Link>
                   </SidebarMenuButton>

@@ -43,7 +43,7 @@ const App = () => (
                 <Route path="/goals" element={<GoalsList />} />
                 <Route path="/goals/new" element={<GoalForm />} />
                 <Route path="/goals/:id/edit" element={<GoalForm />} />
-                <Route path="/settings" element={<Settings />} />
+                <Route path="/settings" element={<Settings isDarkMode={false} toggleDarkMode={() => {}} />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

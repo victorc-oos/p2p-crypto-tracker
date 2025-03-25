@@ -10,21 +10,16 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, LogIn, User } from 'lucide-react';
 
-// Esquemas de validación optimizados
-const authSchema = {
+// Update the schemas with proper validation messages in Spanish
+const loginSchema = z.object({
   email: z.string().email({ message: 'Por favor ingresa un correo electrónico válido' }),
   password: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }),
-};
-
-const loginSchema = z.object({
-  email: authSchema.email,
-  password: authSchema.password,
 });
 
 const registerSchema = z.object({
-  email: authSchema.email,
-  password: authSchema.password,
-  confirmPassword: authSchema.password,
+  email: z.string().email({ message: 'Por favor ingresa un correo electrónico válido' }),
+  password: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }),
+  confirmPassword: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Las contraseñas no coinciden",
   path: ["confirmPassword"],
@@ -41,40 +36,45 @@ const Auth: React.FC = () => {
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
 
   const registerForm = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: '', password: '', confirmPassword: '' },
+    defaultValues: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
   });
-
-  const handleAuthError = (error: any) => {
-    console.error('Error de autenticación:', error);
-    setFormError(error.message || 'Error desconocido durante la autenticación');
-  };
 
   const onLoginSubmit = async (values: LoginFormValues) => {
     setFormError(null);
     try {
-      const { error } = await signIn(values.email, values.password);
-      if (error) throw error;
-    } catch (error) {
-      handleAuthError(error);
+      await signIn(values.email, values.password);
+    } catch (error: any) {
+      setFormError(error.message);
     }
   };
 
   const onRegisterSubmit = async (values: RegisterFormValues) => {
     setFormError(null);
+    if (values.password !== values.confirmPassword) {
+      setFormError("Las contraseñas no coinciden");
+      return;
+    }
+    
     try {
-      const { error } = await signUp(values.email, values.password);
-      if (error) throw error;
-    } catch (error) {
-      handleAuthError(error);
+      await signUp(values.email, values.password);
+    } catch (error: any) {
+      setFormError(error.message);
     }
   };
 
-  // Redirigir si el usuario está autenticado
+  // If user is already logged in, redirect to dashboard
   if (user && !loading) {
     return <Navigate to="/" replace />;
   }
@@ -100,17 +100,62 @@ const Auth: React.FC = () => {
         )}
 
         {isLogin ? (
+          // Login Form
           <Form {...loginForm}>
             <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
-              <EmailField form={loginForm} />
-              <PasswordField 
-                form={loginForm} 
-                showPassword={showPassword} 
-                setShowPassword={setShowPassword} 
-                name="password"
-                label="Contraseña"
+              <FormField
+                control={loginForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Correo electrónico</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                        <Input 
+                          placeholder="correo@ejemplo.com" 
+                          className="pl-10" 
+                          {...field} 
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
               
+              <FormField
+                control={loginForm.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contraseña</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="******"
+                          className="pr-10"
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-2.5 text-muted-foreground"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <Button type="submit" className="w-full" disabled={loading}>
                 <LogIn className="mr-2 h-4 w-4" />
                 Iniciar sesión
@@ -118,24 +163,94 @@ const Auth: React.FC = () => {
             </form>
           </Form>
         ) : (
+          // Register Form
           <Form {...registerForm}>
             <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
-              <EmailField form={registerForm} />
-              <PasswordField 
-                form={registerForm} 
-                showPassword={showPassword} 
-                setShowPassword={setShowPassword} 
-                name="password"
-                label="Contraseña"
-              />
-              <PasswordField 
-                form={registerForm} 
-                showPassword={showPassword} 
-                setShowPassword={setShowPassword} 
-                name="confirmPassword"
-                label="Confirmar contraseña"
+              <FormField
+                control={registerForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Correo electrónico</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                        <Input 
+                          placeholder="correo@ejemplo.com" 
+                          className="pl-10" 
+                          {...field} 
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
               
+              <FormField
+                control={registerForm.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contraseña</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="******"
+                          className="pr-10"
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-2.5 text-muted-foreground"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={registerForm.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirmar contraseña</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          placeholder="******"
+                          className="pr-10"
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-2.5 text-muted-foreground"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <Button type="submit" className="w-full" disabled={loading}>
                 Registrarse
               </Button>
@@ -146,10 +261,7 @@ const Auth: React.FC = () => {
         <div className="text-center mt-4">
           <Button 
             variant="link" 
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setFormError(null);
-            }}
+            onClick={() => setIsLogin(!isLogin)}
             className="text-primary"
           >
             {isLogin ? '¿No tienes una cuenta? Regístrate' : '¿Ya tienes una cuenta? Inicia sesión'}
@@ -159,75 +271,5 @@ const Auth: React.FC = () => {
     </div>
   );
 };
-
-// Componentes reutilizables para campos del formulario
-const EmailField = ({ form }: { form: any }) => (
-  <FormField
-    control={form.control}
-    name="email"
-    render={({ field }) => (
-      <FormItem>
-        <FormLabel>Correo electrónico</FormLabel>
-        <FormControl>
-          <div className="relative">
-            <User className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-            <Input 
-              placeholder="correo@ejemplo.com" 
-              className="pl-10" 
-              {...field} 
-            />
-          </div>
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    )}
-  />
-);
-
-const PasswordField = ({ 
-  form, 
-  showPassword, 
-  setShowPassword, 
-  name, 
-  label 
-}: { 
-  form: any, 
-  showPassword: boolean, 
-  setShowPassword: React.Dispatch<React.SetStateAction<boolean>>,
-  name: string,
-  label: string
-}) => (
-  <FormField
-    control={form.control}
-    name={name}
-    render={({ field }) => (
-      <FormItem>
-        <FormLabel>{label}</FormLabel>
-        <FormControl>
-          <div className="relative">
-            <Input
-              type={showPassword ? "text" : "password"}
-              placeholder="******"
-              className="pr-10"
-              {...field}
-            />
-            <button
-              type="button"
-              className="absolute right-3 top-2.5 text-muted-foreground"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? (
-                <EyeOff className="h-5 w-5" />
-              ) : (
-                <Eye className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    )}
-  />
-);
 
 export default Auth;

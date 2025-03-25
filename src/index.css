@@ -100,7 +100,7 @@
   }
   
   .stat-card {
-    @apply glass-card p-6 rounded-xl transition-all duration-300 hover:shadow-lg;
+    @apply glass-card p-4 md:p-6 rounded-xl transition-all duration-300 hover:shadow-lg;
   }
   
   .sidebar-link {
@@ -113,5 +113,47 @@
   
   .page-transition {
     @apply animate-slide-up;
+  }
+
+  /* Responsive helper classes */
+  .responsive-container {
+    @apply w-full px-2 md:px-4 lg:px-6;
+  }
+  
+  .responsive-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+  }
+  
+  .responsive-padding {
+    @apply p-2 sm:p-3 md:p-4 lg:p-6;
+  }
+  
+  .responsive-text {
+    @apply text-sm md:text-base;
+  }
+  
+  .responsive-heading {
+    @apply text-lg md:text-xl lg:text-2xl font-bold;
+  }
+}
+
+/* Mobile-first media queries */
+@media (max-width: 640px) {
+  .container {
+    @apply px-2 py-2;
+  }
+  
+  /* Reduce font sizes on mobile */
+  h1 {
+    @apply text-xl;
+  }
+  
+  h2 {
+    @apply text-lg;
+  }
+  
+  /* Adjust button sizes on mobile */
+  .btn-responsive {
+    @apply px-2 py-1 text-sm;
   }
 }

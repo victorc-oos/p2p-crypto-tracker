@@ -4,6 +4,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Settings from "@/pages/Settings";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Layout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -11,6 +12,16 @@ const Layout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isLoading } = useAuth();
+  const isMobile = useIsMobile();
+  
+  // Auto-collapse sidebar on mobile devices
+  useEffect(() => {
+    if (isMobile) {
+      setCollapsed(true);
+    } else {
+      setCollapsed(false);
+    }
+  }, [isMobile]);
   
   // Verificar autenticación
   useEffect(() => {
@@ -60,7 +71,7 @@ const Layout: React.FC = () => {
   }
   
   return (
-    <div className="min-h-screen flex w-full">
+    <div className="min-h-screen flex w-full overflow-hidden">
       <Sidebar 
         collapsed={collapsed} 
         setCollapsed={setCollapsed}
@@ -70,10 +81,10 @@ const Layout: React.FC = () => {
       
       <main 
         className={`flex-1 transition-all duration-300 ${
-          collapsed ? "pl-20" : "pl-64"
+          collapsed ? (isMobile ? "pl-0" : "pl-20") : (isMobile ? "pl-0" : "pl-64")
         }`}
       >
-        <div className="container mx-auto py-8 px-4 page-transition">
+        <div className="container mx-auto py-4 md:py-8 px-2 md:px-4 page-transition">
           {isSettingsPage ? (
             <Settings isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
           ) : (

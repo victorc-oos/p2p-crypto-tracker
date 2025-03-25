@@ -1,24 +1,21 @@
 
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { 
-  BarChart, 
-  Home, 
-  LogOut, 
-  Menu, 
-  Moon, 
-  Settings, 
-  Sun, 
-  Wallet,
-  Users,
-  ShieldCheck,
+import {
+  BarChart3,
+  CreditCard,
+  History,
+  Home,
+  Menu,
+  Moon,
+  Settings,
+  Sun,
   Target,
-  Globe
+  X,
+  LogOut
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -33,133 +30,102 @@ const Sidebar: React.FC<SidebarProps> = ({
   isDarkMode, 
   toggleDarkMode 
 }) => {
-  const { t } = useLanguage();
+  const location = useLocation();
+  const { signOut, user } = useAuth();
+  
+  const navItems = [
+    { name: "Dashboard", icon: <Home className="h-5 w-5" />, path: "/" },
+    { name: "Métodos de Pago", icon: <CreditCard className="h-5 w-5" />, path: "/payment-methods" },
+    { name: "Transacciones", icon: <History className="h-5 w-5" />, path: "/transactions" },
+    { name: "Estadísticas", icon: <BarChart3 className="h-5 w-5" />, path: "/statistics" },
+    { name: "Metas", icon: <Target className="h-5 w-5" />, path: "/goals" },
+  ];
 
   return (
-    <div 
-      className={`fixed left-0 top-0 h-screen z-40 transition-all duration-300 ease-in-out bg-sidebar ${
+    <div
+      className={`fixed top-0 left-0 z-40 h-screen transition-all duration-300 bg-background border-r ${
         collapsed ? "w-20" : "w-64"
       }`}
     >
-      <div className="flex flex-col h-full">
-        <div className="flex items-center justify-between p-4">
-          {!collapsed && (
-            <h1 className="text-sidebar-foreground text-xl font-semibold">P2P Tracker</h1>
-          )}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => setCollapsed(!collapsed)}
-            className="text-sidebar-foreground"
-          >
-            <Menu size={20} />
-          </Button>
-        </div>
-        <Separator className="bg-sidebar-border" />
-        
-        <nav className="flex-1 py-6 px-2">
-          <ul className="space-y-1">
-            <li>
-              <NavLink 
-                to="/" 
-                className={({ isActive }) => 
-                  `sidebar-link ${isActive ? "active" : ""}`
-                }
-              >
-                <Home size={20} />
-                {!collapsed && <span>{t('dashboard')}</span>}
-              </NavLink>
-            </li>
-            <li>
-              <NavLink 
-                to="/payment-methods" 
-                className={({ isActive }) => 
-                  `sidebar-link ${isActive ? "active" : ""}`
-                }
-              >
-                <Wallet size={20} />
-                {!collapsed && <span>{t('payment_methods')}</span>}
-              </NavLink>
-            </li>
-            <li>
-              <NavLink 
-                to="/transactions" 
-                className={({ isActive }) => 
-                  `sidebar-link ${isActive ? "active" : ""}`
-                }
-              >
-                <Users size={20} />
-                {!collapsed && <span>{t('transactions')}</span>}
-              </NavLink>
-            </li>
-            <li>
-              <NavLink 
-                to="/statistics" 
-                className={({ isActive }) => 
-                  `sidebar-link ${isActive ? "active" : ""}`
-                }
-              >
-                <BarChart size={20} />
-                {!collapsed && <span>{t('statistics')}</span>}
-              </NavLink>
-            </li>
-            <li>
-              <NavLink 
-                to="/goals" 
-                className={({ isActive }) => 
-                  `sidebar-link ${isActive ? "active" : ""}`
-                }
-              >
-                <Target size={20} />
-                {!collapsed && <span>{t('goals')}</span>}
-              </NavLink>
-            </li>
-          </ul>
-        </nav>
-        
-        <div className="mt-auto p-4">
-          <Separator className="bg-sidebar-border mb-4" />
-          
-          <div className="space-y-3">
+      <div className="h-full flex flex-col justify-between py-6">
+        <div>
+          <div className="flex items-center justify-between px-4">
             {!collapsed && (
-              <div className="flex items-center justify-between">
-                <span className="text-sidebar-foreground/80 text-sm">{t('dark_mode')}</span>
-                <Switch
-                  checked={isDarkMode}
-                  onCheckedChange={toggleDarkMode}
-                  className="data-[state=checked]:bg-sidebar-primary"
-                />
-              </div>
+              <h2 className="text-xl font-bold">CriptoTracker</h2>
             )}
-            {collapsed && (
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={toggleDarkMode}
-                className="text-sidebar-foreground w-full"
-              >
-                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-              </Button>
-            )}
-            
-            <NavLink 
-              to="/settings" 
-              className={({ isActive }) => 
-                `sidebar-link ${isActive ? "active" : ""}`
-              }
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setCollapsed(!collapsed)}
             >
-              <Settings size={20} />
-              {!collapsed && <span>{t('settings')}</span>}
-            </NavLink>
-            
-            <Button 
-              variant="ghost" 
-              className={`sidebar-link w-full justify-start`}
-            >
-              <LogOut size={20} />
-              {!collapsed && <span>{t('logout')}</span>}
+              {collapsed ? (
+                <Menu className="h-5 w-5" />
+              ) : (
+                <X className="h-5 w-5" />
+              )}
             </Button>
           </div>
+          
+          {user && (
+            <div className={`mt-2 px-4 ${collapsed ? 'text-center' : ''}`}>
+              <p className={`text-sm text-muted-foreground truncate ${collapsed ? 'hidden' : ''}`}>
+                {user.email}
+              </p>
+            </div>
+          )}
+
+          <nav className="mt-6 space-y-1 px-2">
+            {navItems.map((item) => (
+              <Link
+                to={item.path}
+                key={item.name}
+                className={`flex items-center gap-3 px-3 py-2 transition-colors rounded-md ${
+                  location.pathname === item.path
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted"
+                } ${collapsed ? "justify-center" : ""}`}
+              >
+                {item.icon}
+                {!collapsed && <span>{item.name}</span>}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        <div className="px-4 space-y-2">
+          <div className={`flex ${collapsed ? "justify-center" : "justify-between"} items-center`}>
+            {!collapsed && <span>Tema</span>}
+            <Button variant="ghost" size="icon" onClick={toggleDarkMode}>
+              {isDarkMode ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </Button>
+          </div>
+          
+          <Link
+            to="/settings"
+            className={`flex items-center gap-3 px-3 py-2 transition-colors rounded-md ${
+              location.pathname === "/settings"
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted"
+            } ${collapsed ? "justify-center" : ""}`}
+          >
+            <Settings className="h-5 w-5" />
+            {!collapsed && <span>Ajustes</span>}
+          </Link>
+          
+          <Button
+            variant="ghost"
+            className={`flex w-full items-center gap-3 px-3 py-2 transition-colors rounded-md hover:bg-muted text-red-500 ${
+              collapsed ? "justify-center" : ""
+            }`}
+            onClick={signOut}
+          >
+            <LogOut className="h-5 w-5" />
+            {!collapsed && <span>Cerrar Sesión</span>}
+          </Button>
         </div>
       </div>
     </div>

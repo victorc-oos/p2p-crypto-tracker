@@ -9,6 +9,125 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      goals: {
+        Row: {
+          completed: boolean
+          current_volume: number
+          description: string | null
+          end_date: string | null
+          id: string
+          payment_method_id: string | null
+          start_date: string
+          target_volume: number
+          user_id: string | null
+        }
+        Insert: {
+          completed?: boolean
+          current_volume?: number
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          payment_method_id?: string | null
+          start_date?: string
+          target_volume: number
+          user_id?: string | null
+        }
+        Update: {
+          completed?: boolean
+          current_volume?: number
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          payment_method_id?: string | null
+          start_date?: string
+          target_volume?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goals_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_method_stats: {
+        Row: {
+          id: string
+          payment_method_id: string | null
+          profit: number
+          stat_id: string | null
+          transaction_count: number
+          volume: number
+        }
+        Insert: {
+          id?: string
+          payment_method_id?: string | null
+          profit?: number
+          stat_id?: string | null
+          transaction_count?: number
+          volume?: number
+        }
+        Update: {
+          id?: string
+          payment_method_id?: string | null
+          profit?: number
+          stat_id?: string | null
+          transaction_count?: number
+          volume?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_method_stats_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_method_stats_stat_id_fkey"
+            columns: ["stat_id"]
+            isOneToOne: false
+            referencedRelation: "stats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_methods: {
+        Row: {
+          balance: number
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          name: string
+          type: Database["public"]["Enums"]["payment_method_type"]
+          user_id: string | null
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          currency: string
+          description?: string | null
+          id?: string
+          name: string
+          type: Database["public"]["Enums"]["payment_method_type"]
+          user_id?: string | null
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          name?: string
+          type?: Database["public"]["Enums"]["payment_method_type"]
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -33,6 +152,99 @@ export type Database = {
         }
         Relationships: []
       }
+      stats: {
+        Row: {
+          date: string
+          id: string
+          time_frame: Database["public"]["Enums"]["time_frame"]
+          total_profit: number
+          transaction_count: number
+          user_id: string | null
+          volume: number
+        }
+        Insert: {
+          date?: string
+          id?: string
+          time_frame?: Database["public"]["Enums"]["time_frame"]
+          total_profit?: number
+          transaction_count?: number
+          user_id?: string | null
+          volume?: number
+        }
+        Update: {
+          date?: string
+          id?: string
+          time_frame?: Database["public"]["Enums"]["time_frame"]
+          total_profit?: number
+          transaction_count?: number
+          user_id?: string | null
+          volume?: number
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          date: string
+          description: string | null
+          destination_method_id: string | null
+          fee: number
+          id: string
+          local_amount: number
+          platform: string
+          profit: number
+          rate: number
+          source_method_id: string | null
+          type: Database["public"]["Enums"]["transaction_type"]
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          date?: string
+          description?: string | null
+          destination_method_id?: string | null
+          fee: number
+          id?: string
+          local_amount: number
+          platform: string
+          profit: number
+          rate: number
+          source_method_id?: string | null
+          type: Database["public"]["Enums"]["transaction_type"]
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          date?: string
+          description?: string | null
+          destination_method_id?: string | null
+          fee?: number
+          id?: string
+          local_amount?: number
+          platform?: string
+          profit?: number
+          rate?: number
+          source_method_id?: string | null
+          type?: Database["public"]["Enums"]["transaction_type"]
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_destination_method_id_fkey"
+            columns: ["destination_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_source_method_id_fkey"
+            columns: ["source_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -41,7 +253,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      payment_method_type: "bank" | "wallet" | "exchange"
+      time_frame: "day" | "week" | "month" | "year"
+      transaction_type: "buy" | "sell"
     }
     CompositeTypes: {
       [_ in never]: never

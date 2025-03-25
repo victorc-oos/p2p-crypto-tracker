@@ -1,32 +1,28 @@
 
-export type PaymentMethodType = 'bank' | 'wallet' | 'exchange';
-
 export interface PaymentMethod {
   id: string;
   user_id: string;
   name: string;
-  type: PaymentMethodType;
+  type: 'bank' | 'wallet' | 'exchange';
   balance: number;
   currency: string;
   description?: string;
-  created_at: Date;
+  created_at: string;
 }
-
-export type TransactionType = 'buy' | 'sell';
 
 export interface Transaction {
   id: string;
   user_id: string;
-  type: TransactionType;
-  amount: number; // USDT amount
-  local_amount: number; // Local currency amount
-  rate: number; // Exchange rate
-  fee: number; // Fee percentage
-  profit: number; // Profit amount (can be negative for loss)
-  source_method_id: string; // Source payment method ID
-  destination_method_id: string; // Destination payment method ID
-  date: Date;
-  platform: string; // Platform where the transaction was made
+  type: 'buy' | 'sell';
+  amount: number;
+  local_amount: number;
+  rate: number;
+  fee: number;
+  profit: number;
+  source_method_id: string;
+  destination_method_id: string;
+  date: string;
+  platform: string;
   description?: string;
 }
 
@@ -36,8 +32,8 @@ export interface Goal {
   payment_method_id: string;
   target_volume: number;
   current_volume: number;
-  start_date: Date;
-  end_date?: Date;
+  start_date: string;
+  end_date?: string;
   completed: boolean;
   description?: string;
 }
@@ -45,11 +41,11 @@ export interface Goal {
 export interface Stat {
   id: string;
   user_id: string;
-  date: Date;
+  date: string;
   total_profit: number;
   transaction_count: number;
   volume: number;
-  time_frame: TimeFrame;
+  time_frame: 'day' | 'week' | 'month' | 'year';
 }
 
 export interface PaymentMethodStat {
@@ -61,10 +57,13 @@ export interface PaymentMethodStat {
   transaction_count: number;
 }
 
-export type TimeFrame = 'day' | 'week' | 'month' | 'year';
-
-export interface User {
+export interface UserProfile {
   id: string;
-  email: string;
-  prefersDarkMode?: boolean;
+  user_id: string;
+  first_name?: string;
+  last_name?: string;
+  avatar_url?: string;
+  language?: string;
+  currency?: string;
+  theme?: 'light' | 'dark';
 }

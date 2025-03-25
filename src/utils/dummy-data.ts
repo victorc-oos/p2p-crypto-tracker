@@ -1,204 +1,249 @@
+import { PaymentMethod, Transaction, Goal, Stat, PaymentMethodStat } from './types';
 
-import { 
-  PaymentMethod, 
-  Transaction, 
-  Goal, 
-  Stat,
-  PaymentMethodStat 
-} from './types';
-
-// Generate a random ID
-const generateId = (): string => {
-  return Math.random().toString(36).substring(2, 9);
-};
-
-// Payment Methods
+// Métodos de pago de ejemplo
 export const paymentMethods: PaymentMethod[] = [
   {
-    id: generateId(),
-    name: 'Banco de Venezuela',
-    type: 'bank',
+    id: "pm1",
+    user_id: "user1",
+    name: "Banco Principal",
+    type: "bank",
     balance: 5000,
-    currency: 'VES',
-    description: 'Main bank account',
-    createdAt: new Date('2023-01-15'),
+    currency: "USD",
+    description: "Cuenta principal para operaciones diarias",
+    created_at: "2023-01-01T00:00:00Z"
   },
   {
-    id: generateId(),
-    name: 'Zinli',
-    type: 'wallet',
+    id: "pm2",
+    user_id: "user1",
+    name: "Binance",
+    type: "exchange",
     balance: 2500,
-    currency: 'USD',
-    description: 'Digital wallet for USD',
-    createdAt: new Date('2023-01-20'),
+    currency: "USDT",
+    description: "Exchange principal para criptomonedas",
+    created_at: "2023-01-15T00:00:00Z"
   },
   {
-    id: generateId(),
-    name: 'PayPal',
-    type: 'wallet',
-    balance: 1500,
-    currency: 'USD',
-    description: 'For international payments',
-    createdAt: new Date('2023-02-05'),
+    id: "pm3",
+    user_id: "user1",
+    name: "Metamask",
+    type: "wallet",
+    balance: 1200,
+    currency: "ETH",
+    description: "Wallet para Ethereum y tokens ERC-20",
+    created_at: "2023-02-01T00:00:00Z"
   },
   {
-    id: generateId(),
-    name: 'Binance',
-    type: 'exchange',
+    id: "pm4",
+    user_id: "user1",
+    name: "Coinbase",
+    type: "exchange",
     balance: 3000,
-    currency: 'USDT',
-    description: 'Main crypto exchange',
-    createdAt: new Date('2023-01-10'),
+    currency: "USDT",
+    description: "Exchange secundario para operaciones en USD",
+    created_at: "2023-02-15T00:00:00Z"
   },
   {
-    id: generateId(),
-    name: 'El Dorado',
-    type: 'exchange',
-    balance: 1000,
-    currency: 'USDT',
-    description: 'Local crypto exchange',
-    createdAt: new Date('2023-03-01'),
-  },
+    id: "pm5",
+    user_id: "user1",
+    name: "Banco Secundario",
+    type: "bank",
+    balance: 2000,
+    currency: "EUR",
+    description: "Cuenta en euros para gastos internacionales",
+    created_at: "2023-03-01T00:00:00Z"
+  }
 ];
 
-// Transactions
-const generateTransactions = (): Transaction[] => {
-  const transactions: Transaction[] = [];
-  const today = new Date();
-  
-  // Generate 50 random transactions over the last 3 months
-  for (let i = 0; i < 50; i++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() - Math.floor(Math.random() * 90)); // Random date in last 90 days
-    
-    const type = Math.random() > 0.5 ? 'buy' : 'sell';
-    const amount = Math.floor(Math.random() * 1000) + 100; // 100-1100 USDT
-    const rate = 28 + Math.random() * 4; // Rate between 28-32
-    const localAmount = amount * rate;
-    const fee = Math.random() * 2; // 0-2% fee
-    const feeAmount = (amount * fee) / 100;
-    
-    // Random profit/loss calculation
-    let profit = 0;
-    if (type === 'buy') {
-      profit = -(feeAmount * rate); // Loss from fees
-    } else {
-      profit = (amount * 0.01 * rate) - (feeAmount * rate); // 1% profit minus fees
-    }
-    
-    // Random source and destination
-    const sourceMethodIdx = Math.floor(Math.random() * paymentMethods.length);
-    let destMethodIdx = Math.floor(Math.random() * paymentMethods.length);
-    while (destMethodIdx === sourceMethodIdx) {
-      destMethodIdx = Math.floor(Math.random() * paymentMethods.length);
-    }
-    
-    transactions.push({
-      id: generateId(),
-      type,
-      amount,
-      localAmount,
-      rate,
-      fee,
-      profit,
-      sourceMethodId: paymentMethods[sourceMethodIdx].id,
-      destinationMethodId: paymentMethods[destMethodIdx].id,
-      date,
-      platform: ['Binance P2P', 'LocalBitcoins', 'AirTM', 'El Dorado', 'Direct'][Math.floor(Math.random() * 5)],
-      description: `Transaction with user ${Math.random().toString(36).substring(2, 8)}`,
-    });
+// Transacciones de ejemplo
+export const transactions: Transaction[] = [
+  {
+    id: "t1",
+    user_id: "user1",
+    type: "buy",
+    amount: 500,
+    local_amount: 490,
+    rate: 0.98,
+    fee: 2.5,
+    profit: 10,
+    source_method_id: "pm1",
+    destination_method_id: "pm2",
+    date: "2023-03-10T10:30:00Z",
+    platform: "Binance P2P",
+    description: "Compra de USDT con transferencia bancaria"
+  },
+  {
+    id: "t2",
+    user_id: "user1",
+    type: "sell",
+    amount: 1000,
+    local_amount: 980,
+    rate: 0.98,
+    fee: 5,
+    profit: 20,
+    source_method_id: "pm2",
+    destination_method_id: "pm1",
+    date: "2023-03-15T14:45:00Z",
+    platform: "Binance P2P",
+    description: "Venta de USDT con transferencia bancaria"
+  },
+  {
+    id: "t3",
+    user_id: "user1",
+    type: "buy",
+    amount: 300,
+    local_amount: 294,
+    rate: 0.98,
+    fee: 1.5,
+    profit: 6,
+    source_method_id: "pm1",
+    destination_method_id: "pm3",
+    date: "2023-03-20T09:15:00Z",
+    platform: "Uniswap",
+    description: "Compra de ETH con tarjeta de crédito"
+  },
+  {
+    id: "t4",
+    user_id: "user1",
+    type: "sell",
+    amount: 600,
+    local_amount: 588,
+    rate: 0.98,
+    fee: 3,
+    profit: 12,
+    source_method_id: "pm3",
+    destination_method_id: "pm1",
+    date: "2023-03-25T16:00:00Z",
+    platform: "Coinbase",
+    description: "Venta de ETH con transferencia bancaria"
+  },
+  {
+    id: "t5",
+    user_id: "user1",
+    type: "buy",
+    amount: 800,
+    local_amount: 784,
+    rate: 0.98,
+    fee: 4,
+    profit: 16,
+    source_method_id: "pm1",
+    destination_method_id: "pm4",
+    date: "2023-03-30T12:30:00Z",
+    platform: "Coinbase",
+    description: "Compra de BTC con tarjeta de crédito"
   }
-  
-  return transactions.sort((a, b) => b.date.getTime() - a.date.getTime()); // Sort by date desc
-};
+];
 
-export const transactions = generateTransactions();
-
-// Goals
+// Metas de ejemplo
 export const goals: Goal[] = [
   {
-    id: generateId(),
-    paymentMethodId: paymentMethods[0].id,
-    targetVolume: 50000,
-    currentVolume: 35000,
-    startDate: new Date('2023-01-01'),
-    endDate: new Date('2023-12-31'),
+    id: "g1",
+    user_id: "user1",
+    payment_method_id: "pm2",
+    target_volume: 5000,
+    current_volume: 2500,
+    start_date: "2023-01-01T00:00:00Z",
+    end_date: "2023-12-31T23:59:59Z",
     completed: false,
-    description: 'Yearly volume target for Bank of Venezuela',
+    description: "Meta anual de volumen en Binance"
   },
   {
-    id: generateId(),
-    paymentMethodId: paymentMethods[1].id,
-    targetVolume: 25000,
-    currentVolume: 22000,
-    startDate: new Date('2023-06-01'),
-    endDate: new Date('2023-08-31'),
+    id: "g2",
+    user_id: "user1",
+    payment_method_id: "pm3",
+    target_volume: 2000,
+    current_volume: 1200,
+    start_date: "2023-01-01T00:00:00Z",
+    end_date: "2023-06-30T23:59:59Z",
     completed: false,
-    description: 'Q3 target for Zinli',
+    description: "Meta semestral de volumen en Ethereum"
   },
   {
-    id: generateId(),
-    paymentMethodId: paymentMethods[3].id,
-    targetVolume: 100000,
-    currentVolume: 48000,
-    startDate: new Date('2023-01-01'),
-    endDate: new Date('2023-12-31'),
+    id: "g3",
+    user_id: "user1",
+    payment_method_id: "pm4",
+    target_volume: 10000,
+    current_volume: 3000,
+    start_date: "2023-01-01T00:00:00Z",
+    end_date: "2023-12-31T23:59:59Z",
     completed: false,
-    description: 'Yearly Binance target',
-  },
+    description: "Meta anual de volumen en Coinbase"
+  }
 ];
 
-// Generate stats
-const generateStats = (): Stat[] => {
-  const stats: Stat[] = [];
-  const today = new Date();
-  
-  // Generate daily stats for the last 30 days
-  for (let i = 0; i < 30; i++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() - i);
-    date.setHours(0, 0, 0, 0);
-    
-    // Find transactions for this day
-    const dayTransactions = transactions.filter(t => {
-      const tDate = new Date(t.date);
-      return tDate.getFullYear() === date.getFullYear() &&
-             tDate.getMonth() === date.getMonth() &&
-             tDate.getDate() === date.getDate();
-    });
-    
-    // Calculate stats
-    const totalProfit = dayTransactions.reduce((sum, t) => sum + t.profit, 0);
-    const volume = dayTransactions.reduce((sum, t) => sum + t.amount, 0);
-    
-    // Payment method stats
-    const methodStats: PaymentMethodStat[] = [];
-    
-    for (const method of paymentMethods) {
-      const methodTxs = dayTransactions.filter(t => 
-        t.sourceMethodId === method.id || t.destinationMethodId === method.id
-      );
-      
-      if (methodTxs.length > 0) {
-        methodStats.push({
-          paymentMethodId: method.id,
-          profit: methodTxs.reduce((sum, t) => sum + t.profit, 0),
-          volume: methodTxs.reduce((sum, t) => sum + t.amount, 0),
-          transactionCount: methodTxs.length,
-        });
-      }
-    }
-    
-    stats.push({
-      date,
-      totalProfit,
-      transactionCount: dayTransactions.length,
-      volume,
-      paymentMethodStats: methodStats,
-    });
+// Estadísticas de ejemplo
+export const stats: Stat[] = [
+  {
+    id: "s1",
+    user_id: "user1",
+    date: "2023-03-10T00:00:00Z",
+    total_profit: 150,
+    transaction_count: 5,
+    volume: 2500,
+    time_frame: "day"
+  },
+  {
+    id: "s2",
+    user_id: "user1",
+    date: "2023-03-11T00:00:00Z",
+    total_profit: 180,
+    transaction_count: 7,
+    volume: 3000,
+    time_frame: "day"
+  },
+  {
+    id: "s3",
+    user_id: "user1",
+    date: "2023-03-12T00:00:00Z",
+    total_profit: 200,
+    transaction_count: 8,
+    volume: 3500,
+    time_frame: "day"
+  },
+  {
+    id: "s4",
+    user_id: "user1",
+    date: "2023-03-13T00:00:00Z",
+    total_profit: 220,
+    transaction_count: 9,
+    volume: 4000,
+    time_frame: "day"
+  },
+  {
+    id: "s5",
+    user_id: "user1",
+    date: "2023-03-14T00:00:00Z",
+    total_profit: 250,
+    transaction_count: 10,
+    volume: 4500,
+    time_frame: "day"
   }
-  
-  return stats;
+];
+
+// Función para obtener estadísticas por método de pago
+export const getPaymentMethodStats = (methodId: string): PaymentMethodStat => {
+  const methodTransactions = transactions.filter(
+    (t) => t.source_method_id === methodId || t.destination_method_id === methodId
+  );
+
+  return {
+    id: `pms-${methodId}`,
+    stat_id: "s1",
+    payment_method_id: methodId,
+    profit: methodTransactions.reduce((sum, t) => sum + t.profit, 0),
+    volume: methodTransactions.reduce((sum, t) => sum + t.amount, 0),
+    transaction_count: methodTransactions.length
+  };
 };
 
-export const stats = generateStats();
+// Función para obtener estadísticas generales
+export const getGeneralStats = (): Stat => {
+  return {
+    id: "general",
+    user_id: "user1",
+    date: new Date().toISOString(),
+    total_profit: transactions.reduce((sum, t) => sum + t.profit, 0),
+    transaction_count: transactions.length,
+    volume: transactions.reduce((sum, t) => sum + t.amount, 0),
+    time_frame: "month"
+  };
+};

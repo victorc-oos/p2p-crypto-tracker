@@ -25,19 +25,21 @@ import { Switch } from "@/components/ui/switch";
 import { paymentMethods, goals } from "@/utils/dummy-data";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const GoalForm: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = !!id;
+  const { t } = useLanguage();
 
   // Find the goal if editing
   const goal = isEditing ? goals.find((g) => g.id === id) : null;
 
   // Form state
-  const [targetVolume, setTargetVolume] = useState(goal?.targetVolume || 0);
-  const [currentVolume, setCurrentVolume] = useState(goal?.currentVolume || 0);
-  const [hasEndDate, setHasEndDate] = useState(!!goal?.endDate);
+  const [targetVolume, setTargetVolume] = useState(goal?.target_volume || 0);
+  const [currentVolume, setCurrentVolume] = useState(goal?.current_volume || 0);
+  const [hasEndDate, setHasEndDate] = useState(!!goal?.end_date);
 
   // Calculate progress percentage
   const progressPercentage = Math.min(
@@ -51,7 +53,9 @@ const GoalForm: React.FC = () => {
 
     // In a real app, you would save the data to the backend here
     toast.success(
-      isEditing ? "Goal updated successfully!" : "Goal added successfully!"
+      isEditing 
+        ? t("edit") + " " + t("goals").toLowerCase() 
+        : t("add") + " " + t("goals").toLowerCase()
     );
 
     navigate("/goals");
@@ -67,29 +71,29 @@ const GoalForm: React.FC = () => {
           className="mr-2"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
+          {t("back")}
         </Button>
         <h1 className="text-3xl font-bold tracking-tight">
-          {isEditing ? "Edit Goal" : "New Goal"}
+          {isEditing ? t("edit") + " " + t("goals") : t("add") + " " + t("goals")}
         </h1>
       </div>
 
       <Card className="max-w-2xl mx-auto">
         <form onSubmit={handleSubmit}>
           <CardHeader>
-            <CardTitle>{isEditing ? "Edit Goal" : "Create Goal"}</CardTitle>
+            <CardTitle>{isEditing ? t("edit") + " " + t("goals") : t("add") + " " + t("goals")}</CardTitle>
             <CardDescription>
               {isEditing
-                ? "Update your volume target or progress"
-                : "Set a new volume target for a payment method"}
+                ? "Actualiza tu meta de volumen o progreso"
+                : "Establece una nueva meta de volumen para un método de pago"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="paymentMethod">Payment Method</Label>
-              <Select defaultValue={goal?.paymentMethodId || ""}>
+              <Label htmlFor="paymentMethod">{t("payment_methods")}</Label>
+              <Select defaultValue={goal?.payment_method_id || ""}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select payment method" />
+                  <SelectValue placeholder="Selecciona un método de pago" />
                 </SelectTrigger>
                 <SelectContent>
                   {paymentMethods.map((method) => (
@@ -102,13 +106,13 @@ const GoalForm: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="targetVolume">Target Volume</Label>
+              <Label htmlFor="targetVolume">Volumen objetivo</Label>
               <Input
                 id="targetVolume"
                 type="number"
                 min="0"
                 step="0.01"
-                placeholder="Target volume to achieve"
+                placeholder="Volumen objetivo a alcanzar"
                 value={targetVolume}
                 onChange={(e) => setTargetVolume(parseFloat(e.target.value) || 0)}
                 required
@@ -118,14 +122,14 @@ const GoalForm: React.FC = () => {
             {isEditing && (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="currentVolume">Current Volume</Label>
+                  <Label htmlFor="currentVolume">Volumen actual</Label>
                   <Input
                     id="currentVolume"
                     type="number"
                     min="0"
                     step="0.01"
                     max={targetVolume}
-                    placeholder="Current progress"
+                    placeholder="Progreso actual"
                     value={currentVolume}
                     onChange={(e) =>
                       setCurrentVolume(parseFloat(e.target.value) || 0)
@@ -136,7 +140,7 @@ const GoalForm: React.FC = () => {
 
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <Label>Progress</Label>
+                    <Label>Progreso</Label>
                     <span className="text-sm text-muted-foreground">
                       {progressPercentage}%
                     </span>
@@ -147,13 +151,13 @@ const GoalForm: React.FC = () => {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="startDate">Start Date</Label>
+              <Label htmlFor="startDate">Fecha de inicio</Label>
               <Input
                 id="startDate"
                 type="date"
                 defaultValue={
                   goal
-                    ? new Date(goal.startDate).toISOString().split("T")[0]
+                    ? new Date(goal.start_date).toISOString().split("T")[0]
                     : new Date().toISOString().split("T")[0]
                 }
                 required
@@ -166,18 +170,18 @@ const GoalForm: React.FC = () => {
                 checked={hasEndDate}
                 onCheckedChange={setHasEndDate}
               />
-              <Label htmlFor="hasEndDate">Set End Date</Label>
+              <Label htmlFor="hasEndDate">Establecer fecha de finalización</Label>
             </div>
 
             {hasEndDate && (
               <div className="space-y-2">
-                <Label htmlFor="endDate">End Date</Label>
+                <Label htmlFor="endDate">Fecha de finalización</Label>
                 <Input
                   id="endDate"
                   type="date"
                   defaultValue={
-                    goal?.endDate
-                      ? new Date(goal.endDate).toISOString().split("T")[0]
+                    goal?.end_date
+                      ? new Date(goal.end_date).toISOString().split("T")[0]
                       : ""
                   }
                   required={hasEndDate}
@@ -186,10 +190,10 @@ const GoalForm: React.FC = () => {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description (Optional)</Label>
+              <Label htmlFor="description">Descripción (Opcional)</Label>
               <Textarea
                 id="description"
-                placeholder="Add notes about this goal"
+                placeholder="Añade notas sobre esta meta"
                 defaultValue={goal?.description || ""}
               />
             </div>
@@ -200,10 +204,10 @@ const GoalForm: React.FC = () => {
               type="button"
               onClick={() => navigate("/goals")}
             >
-              Cancel
+              {t("cancel")}
             </Button>
             <Button type="submit">
-              {isEditing ? "Update Goal" : "Create Goal"}
+              {isEditing ? t("save") : t("add")}
             </Button>
           </CardFooter>
         </form>

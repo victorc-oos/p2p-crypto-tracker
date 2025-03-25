@@ -27,6 +27,20 @@ const translations = {
     "language": "Language",
     "security": "Security",
     "logout": "Logout",
+    "appearance": "Appearance",
+    "account": "Account",
+    "notifications": "Notifications",
+    "profile_info": "Profile Information",
+    "update_personal_info": "Update your personal and contact information",
+    "manage_security": "Manage your account security",
+    "feature_in_development": "Feature in development...",
+    "customize_appearance": "Customize the application appearance",
+    "dark_mode_description": "Activate dark mode to reduce eye strain",
+    "notification_preferences": "Configure your notification preferences",
+    "spanish": "Spanish",
+    "english": "English",
+    "change_language": "Change language",
+    "select_language": "Select language",
     
     // Common
     "add": "Add",
@@ -36,6 +50,7 @@ const translations = {
     "cancel": "Cancel",
     "back": "Back",
     "search": "Search",
+    "theme": "Theme",
   },
   es: {
     // Dashboard
@@ -51,6 +66,20 @@ const translations = {
     "language": "Idioma",
     "security": "Seguridad",
     "logout": "Cerrar Sesión",
+    "appearance": "Apariencia",
+    "account": "Cuenta",
+    "notifications": "Notificaciones",
+    "profile_info": "Información de Perfil",
+    "update_personal_info": "Actualiza tu información personal y de contacto",
+    "manage_security": "Administra la seguridad de tu cuenta",
+    "feature_in_development": "Funcionalidad en desarrollo...",
+    "customize_appearance": "Personaliza la apariencia de la aplicación",
+    "dark_mode_description": "Activa el modo oscuro para reducir el cansancio visual",
+    "notification_preferences": "Configura tus preferencias de notificación",
+    "spanish": "Español",
+    "english": "Inglés",
+    "change_language": "Cambiar idioma",
+    "select_language": "Seleccionar idioma",
     
     // Common
     "add": "Añadir",
@@ -60,6 +89,7 @@ const translations = {
     "cancel": "Cancelar",
     "back": "Volver",
     "search": "Buscar",
+    "theme": "Tema",
   }
 };
 

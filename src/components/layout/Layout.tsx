@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { 
   SidebarProvider, 
   Sidebar, 
@@ -35,6 +36,7 @@ const Layout: React.FC = () => {
   const navigate = useNavigate();
   const { user, isLoading, signOut } = useAuth();
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
   
   // Check if user preference is for dark mode
   useEffect(() => {
@@ -81,11 +83,11 @@ const Layout: React.FC = () => {
   }
   
   const navItems = [
-    { name: "Dashboard", icon: <Home className="h-5 w-5" />, path: "/" },
-    { name: "Métodos de Pago", icon: <CreditCard className="h-5 w-5" />, path: "/payment-methods" },
-    { name: "Transacciones", icon: <History className="h-5 w-5" />, path: "/transactions" },
-    { name: "Estadísticas", icon: <BarChart3 className="h-5 w-5" />, path: "/statistics" },
-    { name: "Metas", icon: <Target className="h-5 w-5" />, path: "/goals" },
+    { name: t('dashboard'), icon: <Home className="h-5 w-5" />, path: "/" },
+    { name: t('payment_methods'), icon: <CreditCard className="h-5 w-5" />, path: "/payment-methods" },
+    { name: t('transactions'), icon: <History className="h-5 w-5" />, path: "/transactions" },
+    { name: t('statistics'), icon: <BarChart3 className="h-5 w-5" />, path: "/statistics" },
+    { name: t('goals'), icon: <Target className="h-5 w-5" />, path: "/goals" },
   ];
   
   const isSettingsPage = location.pathname === '/settings';
@@ -127,11 +129,11 @@ const Layout: React.FC = () => {
                   <SidebarMenuButton 
                     asChild 
                     isActive={location.pathname === "/settings"}
-                    tooltip="Ajustes"
+                    tooltip={t('settings')}
                   >
                     <Link to="/settings">
                       <SettingsIcon className="h-5 w-5" />
-                      <span>Ajustes</span>
+                      <span>{t('settings')}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -141,7 +143,7 @@ const Layout: React.FC = () => {
           <SidebarFooter>
             <div className="px-4 py-2 space-y-4">
               <div className="flex justify-between items-center">
-                <span>Tema</span>
+                <span>{t('theme')}</span>
                 <button
                   className="p-2 rounded-md hover:bg-muted"
                   onClick={toggleDarkMode}
@@ -159,7 +161,7 @@ const Layout: React.FC = () => {
                 onClick={signOut}
               >
                 <LogOut className="h-5 w-5" />
-                <span>Cerrar Sesión</span>
+                <span>{t('logout')}</span>
               </button>
             </div>
           </SidebarFooter>

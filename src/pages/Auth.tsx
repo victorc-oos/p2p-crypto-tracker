@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -9,17 +9,28 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, LogIn, User } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
 
-// Update the schemas with proper validation messages in Spanish
+// Define schemas with proper validation messages in Spanish
 const loginSchema = z.object({
-  email: z.string().email({ message: 'Por favor ingresa un correo electrónico válido' }),
-  password: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }),
+  email: z.string()
+    .min(1, { message: 'El correo electrónico es requerido' })
+    .email({ message: 'Por favor ingresa un correo electrónico válido' }),
+  password: z.string()
+    .min(1, { message: 'La contraseña es requerida' })
+    .min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }),
 });
 
 const registerSchema = z.object({
-  email: z.string().email({ message: 'Por favor ingresa un correo electrónico válido' }),
-  password: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }),
-  confirmPassword: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }),
+  email: z.string()
+    .min(1, { message: 'El correo electrónico es requerido' })
+    .email({ message: 'Por favor ingresa un correo electrónico válido' }),
+  password: z.string()
+    .min(1, { message: 'La contraseña es requerida' })
+    .min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }),
+  confirmPassword: z.string()
+    .min(1, { message: 'Confirmar contraseña es requerido' })
+    .min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Las contraseñas no coinciden",
   path: ["confirmPassword"],
@@ -51,25 +62,37 @@ const Auth: React.FC = () => {
     },
   });
 
+  // Reset form error when switching between login and register
+  useEffect(() => {
+    setFormError(null);
+    if (isLogin) {
+      loginForm.reset();
+    } else {
+      registerForm.reset();
+    }
+  }, [isLogin]);
+
   const onLoginSubmit = async (values: LoginFormValues) => {
     setFormError(null);
     try {
       await signIn(values.email, values.password);
     } catch (error: any) {
+      // Error is handled in the AuthContext, 
+      // formError will be set here for display
       setFormError(error.message);
     }
   };
 
   const onRegisterSubmit = async (values: RegisterFormValues) => {
     setFormError(null);
-    if (values.password !== values.confirmPassword) {
-      setFormError("Las contraseñas no coinciden");
-      return;
-    }
     
     try {
+      console.log('Register form values:', values);
+      
+      // Password validation already handled by Zod
       await signUp(values.email, values.password);
     } catch (error: any) {
+      console.error('Registration error:', error);
       setFormError(error.message);
     }
   };

@@ -79,7 +79,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       setLoading(true);
       setError(null);
-      const { error } = await supabase.auth.signUp({ email, password });
+      
+      // Log the registration attempt
+      console.log('Attempting to register with:', { email, passwordLength: password.length });
+      
+      const { data, error } = await supabase.auth.signUp({ 
+        email, 
+        password,
+        options: {
+          emailRedirectTo: window.location.origin,
+        }
+      });
+      
+      console.log('Registration response:', { data, error });
       
       if (error) {
         console.error('Sign up error:', error.message);
@@ -91,9 +103,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         });
         throw error;
       } else {
+        // Check if user is created but confirmation is needed
+        if (data?.user && data.user.identities?.length === 0) {
+          const message = "Este correo electrónico ya está registrado";
+          setError(message);
+          toast({
+            title: "Error al registrarse",
+            description: message,
+            variant: "destructive",
+          });
+          throw new Error(message);
+        }
+        
         toast({
           title: "Registro exitoso",
-          description: "Por favor, verifica tu correo electrónico",
+          description: "Por favor, verifica tu correo electrónico para confirmar tu cuenta",
         });
       }
     } catch (error: any) {
